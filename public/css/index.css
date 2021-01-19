@@ -1,24 +1,39 @@
 body {
     margin: 0
-  }
+}
 
-  div {
+div {
     box-sizing: border-box;
-  }
+}
 
-  #palette, #viewer {
+#palette, #viewer {
     height: 100vh;
-  }
+}
 
-  .prod-item {
-    background-color: lightblue;
+#iconProdSet div {
+    margin: 3px;
+    cursor: pointer;
+    border: 1px #b6ded5 solid;
+    display: inline-block;
+}
+ 
+#iconProdSet div:hover {
+    background-color: #b6ded5;
+}
+
+.prod-item {
+    background-color: #e9e9e9;
     width: 100%;
     padding: 12px 10px;
     margin-top: 10px;
     cursor: pointer;
-  }
+}
 
-  #btnShowProdSet {
+.selected {
+    background-color: #81c6b7;
+}
+
+#btnShowProdSet {
     background-color: #81c6b7;
     opacity: .5;
     border: none;
@@ -35,8 +50,8 @@ body {
     left: 20px;
     bottom: 20px;
     border-radius: 50%;
-  }
+}
 
-  #btnShowProdSet:hover {
+#btnShowProdSet:hover {
     opacity: 1;
-  }
+}

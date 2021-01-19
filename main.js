@@ -79,9 +79,11 @@ app.get("/getProductSets", async (req, res) => {
 
 app.post("/saveProductSet", async (req, res) => {
     let prod_set_name = req.body.prod_set_name;
+    let src = req.body.src;
     try {
         PRODUCT_SETS[prod_set_name] = {
-            "src": "./images/deadbolt.png", "items": []
+            "pname": prod_set_name,
+            "src": src, "items": []
         };
         await new Promise((resolve, reject) => {
             fs.writeFile(PRODUCT_SETS_PATH, JSON.stringify(PRODUCT_SETS), (err) => {

@@ -16,21 +16,6 @@ let productSets = {};
 // ];
 
 $(document).ready(function () {
-  let container = document.querySelector('#iconProdSet');
-  let matches = container.querySelectorAll('div');
-  for (let div of matches) {
-    div.addEventListener('click', function (event) {
-      if (div.classList.contains('selected')) {
-        div.classList.remove('selected');
-      } else {
-        for (let div2 of matches) {
-          div2.classList.remove('selected');
-        }
-        div.classList.add('selected');
-      }
-    })
-  }
-
   (function (exports) {
     // const TRIANGLE_TOOL_NAME = 'AnnotationCreateTriangle';
     WebViewer({
@@ -80,19 +65,110 @@ $(document).ready(function () {
           });
         });
 
-        // instance.iframeWindow.document.body.ondragover = e => {
-        //   e.preventDefault();
-        //   return false;
+        // // stamp.js
+        // const customStampTool = window.createStampTool(instance);
+
+        // const TriangleCreateTool = exports.TriangleCreateToolFactory.initialize(instance.Annotations, instance.Tools, instance.CoreControls);
+        // const TriangleAnnotation = exports.TriangleAnnotationFactory.initialize(instance.Annotations, instance.CoreControls);
+
+        // // register the annotation type so that it can be saved to XFDF files
+        // instance.docViewer.getAnnotationManager().registerAnnotationType(TriangleAnnotation.prototype.elementName, TriangleAnnotation);
+        // // fxn to check if an annotation is a triangle annotation. allows WebViewer UI to be able to style a selected custom triange annotation
+        // const isTriangleAnnot = annotation =>
+        //   annotation && annotation[exports.TriangleAnnotationFactory.ANNOT_TYPE] && annotation[exports.TriangleAnnotationFactory.ANNOT_TYPE] === exports.TriangleAnnotationFactory.TRIANGLE_ANNOT_ID;
+        // const addTriangleTool = () => {
+        //   instance.registerTool(
+        //     {
+        //       toolName: TRIANGLE_TOOL_NAME,
+        //       toolObject: new TriangleCreateTool(instance.docViewer),
+        //       buttonImage:
+        //         '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">' +
+        //         '<path d="M12 7.77L18.39 18H5.61L12 7.77M12 4L2 20h20L12 4z"/>' +
+        //         '<path fill="none" d="M0 0h24v24H0V0z"/>' +
+        //         '</svg>',
+        //       buttonName: 'triangleToolButton',
+        //       tooltip: 'Triangle',
+        //     },
+        //     TriangleAnnotation,
+        //     annotation => isTriangleAnnot(annotation)
+        //   );
+
+        //   const triangleButton = {
+        //     type: 'toolButton',
+        //     toolName: TRIANGLE_TOOL_NAME,
+        //   };
+
+        //   instance.setHeaderItems(header => {
+        //     header
+        //       .getHeader('toolbarGroup-Annotate')
+        //       .get('highlightToolGroupButton')
+        //       .insertBefore(triangleButton);
+        //   });
+        //   instance.setToolMode(TRIANGLE_TOOL_NAME);
         // };
 
-        // instance.iframeWindow.document.body.ondrop = e => {
-        //   const scrollElement = instance.docViewer.getScrollViewElement();
-        //   const scrollLeft = scrollElement.scrollLeft || 0;
-        //   const scrollTop = scrollElement.scrollTop || 0;
-        //   dropPoint = { x: e.pageX + scrollLeft, y: e.pageY + scrollTop };
-        //   e.preventDefault();
-        //   return false;
+        // const addCustomStampTool = () => {
+        //   // Register tool
+        //   instance.registerTool({
+        //     toolName: 'CustomStampTool',
+        //     toolObject: customStampTool,
+        //     buttonImage: '../../../samples/annotation/custom-annotations/stamp.png',
+        //     buttonName: 'customStampToolButton',
+        //     tooltip: 'Approved Stamp Tool',
+        //   });
+
+        //   // Add tool button in header
+        //   instance.setHeaderItems(header => {
+        //     header
+        //       .getHeader('toolbarGroup-Annotate')
+        //       .get('highlightToolGroupButton')
+        //       .insertBefore({
+        //         type: 'toolButton',
+        //         toolName: 'CustomStampTool',
+        //       });
+        //   });
+        //   instance.setToolMode('CustomStampTool');
         // };
+
+        // const removeCustomStampTool = () => {
+        //   instance.unregisterTool('CustomStampTool');
+        //   instance.setToolMode('AnnotationEdit');
+        // };
+
+        // const removeTriangleTool = () => {
+        //   instance.unregisterTool(TRIANGLE_TOOL_NAME);
+        //   instance.setToolMode('AnnotationEdit');
+        // };
+
+        // document.getElementById('custom-stamp').onchange = e => {
+        //   if (e.target.checked) {
+        //     addCustomStampTool();
+        //   } else {
+        //     removeCustomStampTool();
+        //   }
+        // };
+
+        // document.getElementById('custom-triangle-tool').onchange = e => {
+        //   if (e.target.checked) {
+        //     addTriangleTool();
+        //   } else {
+        //     removeTriangleTool();
+        //   }
+        // };
+
+        instance.iframeWindow.document.body.ondragover = e => {
+          e.preventDefault();
+          return false;
+        };
+
+        instance.iframeWindow.document.body.ondrop = e => {
+          const scrollElement = instance.docViewer.getScrollViewElement();
+          const scrollLeft = scrollElement.scrollLeft || 0;
+          const scrollTop = scrollElement.scrollTop || 0;
+          dropPoint = { x: e.pageX + scrollLeft, y: e.pageY + scrollTop };
+          e.preventDefault();
+          return false;
+        };
 
         // create a stamp image copy for drag and drop
         // const sampleImg = document.getElementById('sample-image');
@@ -143,29 +219,21 @@ async function setupWebViewer(instance) {
   instance.disableElements(['ribbons', 'toolsHeader']);
   document.getElementById('mdlProdSet').addEventListener('shown.bs.modal', function () {
     clearForm("#formProdSet");
-    getInput("#formProdSet", "prod_set_name").focus();
+    getInput("#formProdSet","prod_set_name").focus();
   });
   $('#btnSaveProdSet').click(async function () {
     let data = getInputValues('#formProdSet');
     if (data.prod_set_name) {
-      let container = document.querySelector('#iconProdSet');
-      let match = container.querySelector('div.selected');
-      if (match) {
-        let icon = match.querySelector('img');
-        data.src = icon.src.replace(window.location.href, "./");
-        let response = await fetch("/saveProductSet", {
-          method: "POST",
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        if (response.status == 200) {
-          await initPalette(instance);
-          bootstrap.Modal.getInstance(document.getElementById('mdlProdSet')).hide();
-        } else
-          window.alert('Save failed= =');
-      } else {
-        window.alert('Please choose an icon !!');
-      }
+      let response = await fetch("/saveProductSet", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      if (response.status == 200) {
+        await initPalette(instance);
+        bootstrap.Modal.getInstance(document.getElementById('mdlProdSet')).hide();
+      } else
+        window.alert('Save failed= =');
     } else {
       window.alert('Please enter your product set name !!');
     }
@@ -213,33 +281,6 @@ async function initPalette(instance) {
     annotManager.redrawAnnotation(stampAnnot);
     annotManager.selectAnnotation(stampAnnot);
   };
-  const addCustomStampTool = (prodSet) => {
-    const customStampTool = window.createStampTool(instance, prodSet);
-    // Register tool
-    instance.registerTool({
-      toolName: `${prodSet.pname}Tool`,
-      toolObject: customStampTool,
-      buttonImage: '../../../samples/annotation/custom-annotations/stamp.png',
-      buttonName: `${prodSet.pname}ToolButton`,
-      tooltip: 'Approved Stamp Tool',
-    });
-
-    // Add tool button in header
-    instance.setHeaderItems(header => {
-      header
-        .getHeader('toolbarGroup-Annotate')
-        .get('highlightToolGroupButton')
-        .insertBefore({
-          type: 'toolButton',
-          toolName: `${prodSet.pname}Tool`,
-        });
-    });
-    instance.setToolMode(`${prodSet.pname}Tool`);
-  };
-  const removeCustomStampTool = (prodSet) => {
-    instance.unregisterTool(`${prodSet.pname}Tool`);
-    instance.setToolMode('AnnotationEdit');
-  };
   const palette = document.getElementById('palette');
   for (let pname in productSets) {
     document.getElementById(pname + 'copy').closest('div').remove();
@@ -258,19 +299,56 @@ async function initPalette(instance) {
     span.textContent = pname;
     img.src = productSets[pname].src;
     img.onload = function () {
-
+      // div.ondragstart = e => {
+      //   e.currentTarget.style.opacity = 0.5;
+      //   const img = e.currentTarget.getElementsByTagName('img')[0];
+      //   const copy = img.cloneNode(true);
+      //   copy.id = 'stamp-image-drag-copy';
+      //   const el = document.getElementById(prod.name + 'copy');
+      //   copy.src = el.src;
+      //   copy.style.width = el.width;
+      //   copy.style.height = el.height;
+      //   copy.style.padding = 0;
+      //   copy.style.position = 'absolute';
+      //   copy.style.top = '-1000px';
+      //   copy.style.left = '-1000px';
+      //   document.body.appendChild(copy);
+      //   e.dataTransfer.setDragImage(copy, copy.width * 0.5, copy.height * 0.5);
+      //   e.dataTransfer.setData('text', '');
+      // };
+      // div.ondragend = e => {
+      //   const img = e.currentTarget.getElementsByTagName('img')[0];
+      //   const el = document.getElementById('stamp-image-drag-copy');
+      //   addStamp(img.src, dropPoint, el.getBoundingClientRect());
+      //   e.currentTarget.style.opacity = 1;
+      //   document.body.removeChild(document.getElementById('stamp-image-drag-copy'));
+      //   e.preventDefault();
+      // };
+      
       div.onclick = e => {
         let img = e.currentTarget.getElementsByTagName('img')[0];
-        if (e.currentTarget.classList.contains('selected')) {
-          e.currentTarget.classList.remove('selected');
-          removeCustomStampTool(productSets[pname]);
-        } else {
-          let els = document.querySelectorAll('div.selected');
-          for (let el of els) el.click();
-          e.currentTarget.classList.add('selected');
-          addCustomStampTool(productSets[pname]);
-        }
-        // addStamp(img.src, {}, document.getElementById(pname + 'copy'));
+        addStamp(img.src, {}, document.getElementById(pname + 'copy'));
+
+        // // Register tool
+        // instance.registerTool({
+        //   toolName: `${prod.name}Tool`,
+        //   toolObject: customStampTool,
+        //   buttonImage: '../../../samples/annotation/custom-annotations/stamp.png',
+        //   buttonName: 'customStampToolButton',
+        //   tooltip: 'Approved Stamp Tool',
+        // });
+
+        // // Add tool button in header
+        // instance.setHeaderItems(header => {
+        //   header
+        //     .getHeader('toolbarGroup-Annotate')
+        //     .get('highlightToolGroupButton')
+        //     .insertBefore({
+        //       type: 'toolButton',
+        //       toolName: 'CustomStampTool',
+        //     });
+        // });
+        // instance.setToolMode('CustomStampTool');
       };
       palette.appendChild(div);
 
@@ -310,7 +388,7 @@ function getRandomColor() {
   return color;
 }
 
-window.createStampTool = (instance, prodSet) => {
+window.createStampTool = instance => {
   const { docViewer, annotManager, Annotations, Tools } = instance;
 
   // Custom stamp tool constructor that inherits generic annotation create tool
@@ -339,8 +417,8 @@ window.createStampTool = (instance, prodSet) => {
 
       let annotation;
       if (this.annotation) {
-        let width = 20;
-        let height = 20;
+        let width = 212;
+        let height = 60;
         const rotation = this.docViewer.getCompleteRotation(this.annotation.PageNumber) * 90;
         this.annotation.Rotation = rotation;
         if (rotation === 270 || rotation === 90) {
@@ -348,14 +426,8 @@ window.createStampTool = (instance, prodSet) => {
           height = width;
           width = t;
         }
-        // const c = document.createElement('canvas');
-        // const ctx = c.getContext('2d');
-        // c.width = width;
-        // c.height = height;
-        // ctx.drawImage(img.src, 0, 0, width, height);
         // 'ImageData' can be a bas64 ImageString or an URL. If it's an URL, relative paths will cause issues when downloading
-        console.log('tiger load icon:' + prodSet.src.substr(1))
-        this.annotation.ImageData = 'http://localhost:9988' + prodSet.src.substr(1);
+        this.annotation.ImageData = stampImage;
         this.annotation.Width = width;
         this.annotation.Height = height;
         this.annotation.X -= width / 2;
