@@ -12,6 +12,7 @@ div {
 
 #iconProdSet div {
     margin: 3px;
+    padding: 5px 8px;
     cursor: pointer;
     border: 1px #b6ded5 solid;
     display: inline-block;
@@ -30,7 +31,7 @@ div {
 }
 
 .selected {
-    background-color: #81c6b7;
+    background-color: #b6ded5;
 }
 
 #btnShowProdSet {
