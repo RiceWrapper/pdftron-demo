@@ -1,0 +1,61 @@
+{
+  "_from": "@pdftron/webviewer-walkthrough",
+  "_id": "@pdftron/webviewer-walkthrough@1.0.5",
+  "_inBundle": false,
+  "_integrity": "sha512-xdF96ZHim4C3kd8cROKKNbAcSmpJ+mftDWtYmom2bMjTId32X9N3VIag3SzvY96vKCpz77cQ+Eblx13jKIJVNw==",
+  "_location": "/@pdftron/webviewer-walkthrough",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "@pdftron/webviewer-walkthrough",
+    "name": "@pdftron/webviewer-walkthrough",
+    "escapedName": "@pdftron%2fwebviewer-walkthrough",
+    "scope": "@pdftron",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/@pdftron/webviewer-walkthrough/-/webviewer-walkthrough-1.0.5.tgz",
+  "_shasum": "dc438409e867a2be88e5082bf919313aaeaeb131",
+  "_spec": "@pdftron/webviewer-walkthrough",
+  "_where": "/Users/tiger/Project/pdftron-test",
+  "author": {
+    "name": "PDFTron Systems Inc."
+  },
+  "bugs": {
+    "url": "https://www.pdftron.com/support/"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Module to show tool-tips demonstrating the functionality of WebViewer.",
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "^7.12.10",
+    "babel-loader": "^8.2.2",
+    "ink-docstrap": "^1.3.2",
+    "jsdoc": "^3.6.6",
+    "webpack": "^5.10.0",
+    "webpack-cli": "^4.2.0"
+  },
+  "homepage": "https://www.pdftron.com/documentation/web/",
+  "license": "ISC",
+  "main": "dist/main.js",
+  "name": "@pdftron/webviewer-walkthrough",
+  "peerDependencies": {
+    "@pdftron/webviewer": "^7.2.0"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "build-doc": "rm -rf doc && ./node_modules/.bin/jsdoc src/walkthrough.js -d doc -c jsdocconfig.json -t ./node_modules/ink-docstrap/template -R README.md",
+    "release-major": "npm version major && npm publish --access public",
+    "release-patch": "npm version patch && npm publish --access public",
+    "watch": "webpack --watch --config webpack.config.js"
+  },
+  "version": "1.0.5"
+}

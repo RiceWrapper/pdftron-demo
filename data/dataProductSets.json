@@ -1,0 +1,10 @@
+{
+    "Deadbolt-01": {
+        "src": "./images/deadbolt.png",
+        "items": []
+    },
+    "Leverset-01": {
+        "src": "./images/leverset.png",
+        "items": []
+    }
+}

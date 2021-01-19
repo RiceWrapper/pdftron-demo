@@ -1,0 +1,18 @@
+{
+  "name": "pdftron-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pdftron/webviewer": "^7.2.0",
+    "@pdftron/webviewer-walkthrough": "^1.0.5",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "formidable": "^1.2.2"
+  }
+}

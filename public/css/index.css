@@ -1,0 +1,42 @@
+body {
+    margin: 0
+  }
+
+  div {
+    box-sizing: border-box;
+  }
+
+  #palette, #viewer {
+    height: 100vh;
+  }
+
+  .prod-item {
+    background-color: lightblue;
+    width: 100%;
+    padding: 12px 10px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  #btnShowProdSet {
+    background-color: #81c6b7;
+    opacity: .5;
+    border: none;
+    color: white;
+    padding: 0px 0px 12px 0px !important;
+    line-height: 0px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 70px;
+    height: 80px;
+    width: 80px;
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    border-radius: 50%;
+  }
+
+  #btnShowProdSet:hover {
+    opacity: 1;
+  }
