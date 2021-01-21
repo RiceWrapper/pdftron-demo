@@ -10,6 +10,7 @@
 // @link Header.insertBefore: https://www.pdftron.com/api/web/Header.html#insertBefore__anchor
 let dropPoint = {};
 let productSets = {};
+var instance;
 // let productSet = [
 //   { name: 'Deadbolt', src: './images/deadbolt.png', items: [] },
 //   { name: 'Leverset', src: './images/leverset.png', items: [] }
@@ -39,7 +40,8 @@ $(document).ready(function () {
       // custom: JSON.stringify({ message: 'tiger check here' }),
       // disabledElements: ['searchButton']
     }, document.getElementById('viewer'))
-      .then(async instance => {
+      .then(async _instance => {
+        instance = _instance;
         setupWebViewer(instance);
         const { docViewer, annotManager } = instance;
         const response = await fetch("/loadPDF");
@@ -161,6 +163,9 @@ async function setupWebViewer(instance) {
         if (response.status == 200) {
           await initPalette(instance);
           bootstrap.Modal.getInstance(document.getElementById('mdlProdSet')).hide();
+          setTimeout(() => {
+            document.getElementById(data.prod_set_name).click();
+          }, 1000);
         } else
           window.alert('Save failed= =');
       } else {
@@ -176,45 +181,45 @@ async function setupWebViewer(instance) {
 }
 
 async function initPalette(instance) {
-  const addStamp = (imgData, point, rect) => {
-    point = point || {};
-    rect = rect || {};
-    const { Annotations, docViewer, annotManager } = instance;
-    const doc = docViewer.getDocument();
-    const displayMode = docViewer.getDisplayModeManager().getDisplayMode();
-    const page = displayMode.getSelectedPages(point, point);
-    if (!!point.x && page.first == null) {
-      return; // don't add to an invalid page location
-    }
-    const pageNumber = page.first !== null ? page.first : docViewer.getCurrentPage();
-    const pageInfo = doc.getPageInfo(pageNumber);
-    const pagePoint = displayMode.windowToPage(point, pageNumber);
-    const zoom = docViewer.getZoom();
+  // const addStamp = (imgData, point, rect) => {
+  //   point = point || {};
+  //   rect = rect || {};
+  //   const { Annotations, docViewer, annotManager } = instance;
+  //   const doc = docViewer.getDocument();
+  //   const displayMode = docViewer.getDisplayModeManager().getDisplayMode();
+  //   const page = displayMode.getSelectedPages(point, point);
+  //   if (!!point.x && page.first == null) {
+  //     return; // don't add to an invalid page location
+  //   }
+  //   const pageNumber = page.first !== null ? page.first : docViewer.getCurrentPage();
+  //   const pageInfo = doc.getPageInfo(pageNumber);
+  //   const pagePoint = displayMode.windowToPage(point, pageNumber);
+  //   const zoom = docViewer.getZoom();
 
-    const stampAnnot = new Annotations.StampAnnotation();
-    stampAnnot.PageNumber = pageNumber;
-    const rotation = docViewer.getCompleteRotation(pageNumber) * 90;
-    stampAnnot.Rotation = rotation;
-    if (rotation === 270 || rotation === 90) {
-      stampAnnot.Width = rect.height / zoom;
-      stampAnnot.Height = rect.width / zoom;
-    } else {
-      stampAnnot.Width = rect.width / zoom;
-      stampAnnot.Height = rect.height / zoom;
-    }
-    stampAnnot.X = (pagePoint.x || pageInfo.width / 2) - stampAnnot.Width / 2;
-    stampAnnot.Y = (pagePoint.y || pageInfo.height / 2) - stampAnnot.Height / 2;
+  //   const stampAnnot = new Annotations.StampAnnotation();
+  //   stampAnnot.PageNumber = pageNumber;
+  //   const rotation = docViewer.getCompleteRotation(pageNumber) * 90;
+  //   stampAnnot.Rotation = rotation;
+  //   if (rotation === 270 || rotation === 90) {
+  //     stampAnnot.Width = rect.height / zoom;
+  //     stampAnnot.Height = rect.width / zoom;
+  //   } else {
+  //     stampAnnot.Width = rect.width / zoom;
+  //     stampAnnot.Height = rect.height / zoom;
+  //   }
+  //   stampAnnot.X = (pagePoint.x || pageInfo.width / 2) - stampAnnot.Width / 2;
+  //   stampAnnot.Y = (pagePoint.y || pageInfo.height / 2) - stampAnnot.Height / 2;
 
-    stampAnnot.ImageData = imgData;
-    stampAnnot.Author = annotManager.getCurrentUser();
+  //   stampAnnot.ImageData = imgData;
+  //   stampAnnot.Author = annotManager.getCurrentUser();
 
-    annotManager.deselectAllAnnotations();
-    annotManager.addAnnotation(stampAnnot);
-    annotManager.redrawAnnotation(stampAnnot);
-    annotManager.selectAnnotation(stampAnnot);
-  };
-  const addCustomStampTool = (prodSet) => {
-    const customStampTool = window.createStampTool(instance, prodSet);
+  //   annotManager.deselectAllAnnotations();
+  //   annotManager.addAnnotation(stampAnnot);
+  //   annotManager.redrawAnnotation(stampAnnot);
+  //   annotManager.selectAnnotation(stampAnnot);
+  // };
+  const addCustomStampTool = (prodSet, img) => {
+    const customStampTool = window.createStampTool(instance, prodSet, img);
     // Register tool
     instance.registerTool({
       toolName: `${prodSet.pname}Tool`,
@@ -241,9 +246,9 @@ async function initPalette(instance) {
     instance.setToolMode('AnnotationEdit');
   };
   const palette = document.getElementById('palette');
-  for (let pname in productSets) {
-    document.getElementById(pname + 'copy').closest('div').remove();
-  }
+  // for (let pname in productSets) {
+  //   document.getElementById(pname + 'copy').closest('div').remove();
+  // }
   const response = await fetch("/getProductSets");
   productSets = await response.json();
   palette.innerHTML = '';
@@ -251,11 +256,12 @@ async function initPalette(instance) {
     const div = document.createElement('div');
     const span = document.createElement('span');
     const img = document.createElement('img');
+    div.id = pname;
     div.setAttribute('draggable', true);
     div.appendChild(img);
     div.appendChild(span);
     div.className = "prod-item";
-    span.textContent = pname;
+    span.innerHTML = `&nbsp;&nbsp;&nbsp;${pname}`;
     img.src = productSets[pname].src;
     img.onload = function () {
 
@@ -268,35 +274,35 @@ async function initPalette(instance) {
           let els = document.querySelectorAll('div.selected');
           for (let el of els) el.click();
           e.currentTarget.classList.add('selected');
-          addCustomStampTool(productSets[pname]);
+          addCustomStampTool(productSets[pname], img);
         }
         // addStamp(img.src, {}, document.getElementById(pname + 'copy'));
       };
       palette.appendChild(div);
 
-      const div2 = document.createElement('div');
-      const img2 = document.createElement('img');
-      img2.id = pname + 'copy';
-      div2.appendChild(img2);
-      div2.style.position = 'absolute';
-      div2.style.top = '-500px';
-      div2.style.left = '-500px';
-      document.body.appendChild(div2);
-      img2.src = img.src;
-      const height = img2.height;
-      const drawImage = () => {
-        const width = (height / img2.height) * img2.width;
-        img2.style.width = `${width}px`;
-        img2.style.height = `${height}px`;
-        const c = document.createElement('canvas');
-        const ctx = c.getContext('2d');
-        c.width = width;
-        c.height = height;
-        ctx.fillStyle = "red";
-        ctx.drawImage(img2, 0, 0, width, height);
-        img2.src = c.toDataURL();
-      };
-      img2.onload = drawImage;
+      // const div2 = document.createElement('div');
+      // const img2 = document.createElement('img');
+      // img2.id = pname + 'copy';
+      // div2.appendChild(img2);
+      // div2.style.position = 'absolute';
+      // div2.style.top = '-500px';
+      // div2.style.left = '-500px';
+      // document.body.appendChild(div2);
+      // img2.src = img.src;
+      // const height = img2.height;
+      // const drawImage = () => {
+      //   const width = (height / img2.height) * img2.width;
+      //   img2.style.width = `${width}px`;
+      //   img2.style.height = `${height}px`;
+      //   const c = document.createElement('canvas');
+      //   const ctx = c.getContext('2d');
+      //   c.width = width;
+      //   c.height = height;
+      //   ctx.fillStyle = "red";
+      //   ctx.drawImage(img2, 0, 0, width, height);
+      //   img2.src = c.toDataURL();
+      // };
+      // img2.onload = drawImage;
     }
   }
 }
@@ -310,7 +316,7 @@ function getRandomColor() {
   return color;
 }
 
-window.createStampTool = (instance, prodSet) => {
+window.createStampTool = (instance, prodSet, img) => {
   const { docViewer, annotManager, Annotations, Tools } = instance;
 
   // Custom stamp tool constructor that inherits generic annotation create tool
@@ -348,14 +354,17 @@ window.createStampTool = (instance, prodSet) => {
           height = width;
           width = t;
         }
-        // const c = document.createElement('canvas');
-        // const ctx = c.getContext('2d');
-        // c.width = width;
-        // c.height = height;
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        var dataURL = canvas.toDataURL("image/png");
         // ctx.drawImage(img.src, 0, 0, width, height);
         // 'ImageData' can be a bas64 ImageString or an URL. If it's an URL, relative paths will cause issues when downloading
-        console.log('tiger load icon:' + prodSet.src.substr(1))
-        this.annotation.ImageData = 'http://localhost:9988' + prodSet.src.substr(1);
+        // console.log('tiger load icon:' + prodSet.src.substr(1))
+        // this.annotation.ImageData = 'http://localhost:9988' + prodSet.src.substr(1);
+        this.annotation.ImageData = dataURL;
         this.annotation.Width = width;
         this.annotation.Height = height;
         this.annotation.X -= width / 2;

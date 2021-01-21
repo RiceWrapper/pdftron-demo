@@ -23,9 +23,10 @@ div {
 }
 
 .prod-item {
+    font-size: 15px;
     background-color: #e9e9e9;
     width: 100%;
-    padding: 12px 10px;
+    padding: 11px 10px;
     margin-top: 10px;
     cursor: pointer;
 }
