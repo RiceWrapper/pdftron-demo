@@ -285,7 +285,7 @@ async function initPalette(instance) {
   for (let pname in productSets) {
     document.getElementById(pname + 'copy').closest('div').remove();
   }
-  const response = await fetch("/getProductSets");
+  const response = await fetch("/getHWSets");
   productSets = await response.json();
   palette.innerHTML = '';
   for (let pname in productSets) {

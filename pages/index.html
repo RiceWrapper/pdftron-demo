@@ -24,26 +24,26 @@
       </div>
     </div>
   </div>
-  <button id="btnShowProdSet" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mdlProdSet">
+  <button id="btnShowHWSet" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mdlHWSet">
     +
   </button>
 
-  <div class="modal fade" id="mdlProdSet" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="lblProdSet" aria-hidden="true">
+  <div class="modal fade" id="mdlHWSet" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="lblHWSet" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
+      <div id="mdlHWSet1" class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="lblProdSet">Create Product Set</h5>
+          <h5 class="modal-title" id="lblHWSet">Create Hardware Set</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="formProdSet">
+          <form id="formHWSet">
             <div class="row">
-              <div class="col-md-5">
-                <label class="form-label">Product Set Name:</label>
+              <div class="col-md-5 mb-3">
+                <label class="form-label">Hardware Set Name:</label>
                 <input class="form-control" name="prod_set_name">
               </div>
-              <div id="iconProdSet" class="col-md-7">
+              <div id="iconHWSet" class="col-md-7 mb-3">
                 <label class="form-label">Choose an Icon:</label>
                 <br>
                 <div><img src="./images/pin1.png"></div>
@@ -57,14 +57,55 @@
                 <div><img src="./images/pin7.png"></div>
                 <div><img src="./images/pin8.png"></div>
                 <div><img src="./images/pin9.png"></div>
-                <br>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Hareware List:</label>
+                <a onclick="showTab('2')" href="#" style="float: right;">+ Add</a>
+                <table id="tblHWSetDetail">
+                  <tr>
+                    <th>Actions</th>
+                    <th>Item No.</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
+                  </tr>
+                </table>
               </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button id="btnSaveProdSet" type="button" class="btn btn-primary">Add</button>
+          <button id="btnSaveHWSet" type="button" class="btn btn-primary">Create</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+      <div id="mdlHWSet2" class="modal-content" style="display: none;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="lblHWSet">Add Hardware</h5>
+          <button type="button" class="btn-close" onclick="showTab('1')"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formHWSetDetail">
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Product Line:</label>
+              <select id="prod_line" name="prod_line" onchange="onProdLineChanged(this)" class="form-select" aria-label="Default select example">
+              </select>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Item No.:</label>
+              <select id="item_no" name="item_no" class="form-select" onchange="onItemNoChanged(this)" aria-label="Default select example">
+              </select>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Quantity:</label>
+              <input id="unit_price" name="unit_price" type="hidden">
+              <input id="quantity" type="number" min="1" value="1" name="quantity" class="form-control">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="btnSaveHWSetDetail" type="button" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-secondary" onclick="showTab('1')">Cancel</button>
         </div>
       </div>
     </div>

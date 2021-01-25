@@ -9,15 +9,27 @@
 // @link Header.getHeader: https://www.pdftron.com/api/web/Header.html#getHeader__anchor
 // @link Header.insertBefore: https://www.pdftron.com/api/web/Header.html#insertBefore__anchor
 let dropPoint = {};
-let productSets = {};
+let HWSets = {};
 var instance;
+var hardwareList = [
+  { prod_line: "Commercial Locks", item_no: "FD360D", unit_price: 360, keyway: [] },
+  { prod_line: "Commercial Locks", item_no: "FD701", unit_price: 320, keyway: [] },
+  { prod_line: "Commercial Locks", item_no: "FD702", unit_price: 300, keyway: [] },
+  { prod_line: "Commercial Locks", item_no: "FD761", unit_price: 280, keyway: [] },
+  { prod_line: "Commercial Locks", item_no: "FD762", unit_price: 370, keyway: [] },
+  { prod_line: "Residential Locks", item_no: "FC3650", unit_price: 200, keyway: [] },
+  { prod_line: "Residential Locks", item_no: "FC3750", unit_price: 220, keyway: [] },
+  { prod_line: "Residential Locks", item_no: "FC3850", unit_price: 210, keyway: [] },
+  { prod_line: "PROMAX Locks", item_no: "PD271", unit_price: 230, keyway: [] },
+  { prod_line: "PROMAX Locks", item_no: "PD272", unit_price: 240, keyway: [] }
+]
 // let productSet = [
 //   { name: 'Deadbolt', src: './images/deadbolt.png', items: [] },
 //   { name: 'Leverset', src: './images/leverset.png', items: [] }
 // ];
 
 $(document).ready(function () {
-  let container = document.querySelector('#iconProdSet');
+  let container = document.querySelector('#iconHWSet');
   let matches = container.querySelectorAll('div');
   for (let div of matches) {
     div.addEventListener('click', function (event) {
@@ -32,6 +44,16 @@ $(document).ready(function () {
     })
   }
 
+  let selector = document.getElementById("prod_line");
+  let prod_lines = hardwareList.filter((v, i) => i === hardwareList.findIndex(v2 => v2.prod_line == v.prod_line));
+  for (let pitem of prod_lines) {
+    let option = document.createElement('option');
+    option.setAttribute("value", pitem.prod_line);
+    option.text = pitem.prod_line;
+    selector.appendChild(option);
+  }
+  onProdLineChanged(selector);
+
   (function (exports) {
     // const TRIANGLE_TOOL_NAME = 'AnnotationCreateTriangle';
     WebViewer({
@@ -39,6 +61,7 @@ $(document).ready(function () {
       // config: "js/alzkWebviewer.js",
       // custom: JSON.stringify({ message: 'tiger check here' }),
       // disabledElements: ['searchButton']
+      css: 'css/index.css'
     }, document.getElementById('viewer'))
       .then(async _instance => {
         instance = _instance;
@@ -80,6 +103,52 @@ $(document).ready(function () {
                 window.alert('Save failed= =');
             }
           });
+        });
+
+        instance.setAnnotationContentOverlayHandler(annotation => {
+          // let hw_set_name = annotation.Subject;
+          // let response = await fetch(`/getHWSet?hw_set_name=${hw_set_name}`, {
+          //   headers: { 'Content-Type': 'application/json' }
+          // });
+          // if (response.status == 200) {
+          let HWSet = {
+            "pname": "Deadbolt-01",
+            "src": "./images/deadbolt.png",
+            "items": [{
+              "prod_line": "Commercial Locks",
+              "item_no": "FD360D",
+              "unit_price": 360,
+              "quantity": 2,
+              "total_price": 720
+            }]
+          }
+          // let HWSet = await response.json();
+          const div = document.createElement('div');
+          const h3 = document.createElement("h3");
+          h3.textContent = annotation.Subject;
+          const table = document.createElement("table");
+          const keys = ["item_no", "quantity", "unit_price", "total_price"];
+          let _tr = document.createElement("tr");
+          for (let key of keys) {
+            let th = document.createElement("th");
+            th.textContent = key;
+            _tr.appendChild(th);
+          }
+          table.appendChild(_tr);
+
+          for (let item of HWSet.items) {
+            let tr = document.createElement("tr");
+            for (let key of keys) {
+              let td = document.createElement("td");
+              td.textContent = item[key];
+              tr.appendChild(td);
+            }
+            table.appendChild(tr);
+          }
+          div.appendChild(h3);
+          div.appendChild(table);
+          return div;
+          // }
         });
 
         // instance.iframeWindow.document.body.ondragover = e => {
@@ -141,39 +210,113 @@ $(document).ready(function () {
   })(window);
 });
 
+function onProdLineChanged(el) {
+  if (el.value) {
+    let selector = document.getElementById("item_no");
+    selector.innerHTML = "";
+    let prod_lines = hardwareList.filter((v) => v.prod_line == el.value);
+    for (let pitem of prod_lines) {
+      let option = document.createElement('option');
+      option.setAttribute("value", pitem.item_no);
+      option.text = pitem.item_no + ` - $${pitem.unit_price}/per`;
+      selector.appendChild(option);
+    }
+    onItemNoChanged(selector);
+  }
+}
+
+function onItemNoChanged(el) {
+  let item_no = el.value;
+  let product = hardwareList.find(x => x.item_no == item_no);
+  let unit_price = document.getElementById("unit_price");
+  if (product) {
+    unit_price.value = product.unit_price;
+  } else {
+    unit_price.value = 0;
+  }
+}
+
+function showTab(no) {
+  let container = document.querySelector('#mdlHWSet');
+  let matches = container.querySelectorAll('div.modal-content');
+  for (let match of matches) {
+    match.style.display = (match.id == `mdlHWSet${no}`) ? 'block' : "none";
+  }
+}
+
 async function setupWebViewer(instance) {
   instance.disableElements(['ribbons', 'toolsHeader']);
-  document.getElementById('mdlProdSet').addEventListener('shown.bs.modal', function () {
-    clearForm("#formProdSet");
-    getInput("#formProdSet", "prod_set_name").focus();
+  document.getElementById('mdlHWSet').addEventListener('shown.bs.modal', function () {
+    clearForm("#formHWSet");
+    getInput("#formHWSet", "prod_set_name").focus();
   });
-  $('#btnSaveProdSet').click(async function () {
-    let data = getInputValues('#formProdSet');
+  $('#btnSaveHWSet').click(async function () {
+    let data = getInputValues('#formHWSet');
     if (data.prod_set_name) {
-      let container = document.querySelector('#iconProdSet');
+      let container = document.querySelector('#iconHWSet');
       let match = container.querySelector('div.selected');
       if (match) {
-        let icon = match.querySelector('img');
-        data.src = icon.src.replace(window.location.href, "./");
-        let response = await fetch("/saveProductSet", {
-          method: "POST",
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        if (response.status == 200) {
-          await initPalette(instance);
-          bootstrap.Modal.getInstance(document.getElementById('mdlProdSet')).hide();
-          setTimeout(() => {
-            document.getElementById(data.prod_set_name).click();
-          }, 1000);
-        } else
-          window.alert('Save failed= =');
+        let tblHWSetDetail = document.getElementById("tblHWSetDetail");
+        let trs = tblHWSetDetail.querySelectorAll("tr");
+        if (trs.length > 1) {
+          let items = [];
+          for (let i = 1; i < trs; i++) {
+            let tds = trs[i].querySelectorAll("td");
+            let item = {};
+            item.item_no = tds[1].textContent;
+            item.quantity = tds[2].textContent;
+            item.unit_price = tds[3].textContent;
+            item.total_price = tds[4].textContent;
+            items.push(item);
+          }
+          let icon = match.querySelector('img');
+          data.src = icon.src.replace(window.location.href, "./");
+          data.items = JSON.stringify(items);
+          let response = await fetch("/saveProductSet", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          if (response.status == 200) {
+            await initPalette(instance);
+            bootstrap.Modal.getInstance(document.getElementById('mdlHWSet')).hide();
+            setTimeout(() => {
+              document.getElementById(data.prod_set_name).click();
+            }, 1000);
+          } else
+            window.alert('Save failed= =');
+        } else {
+          window.alert('Please add a hareware at least !!');
+        }
       } else {
         window.alert('Please choose an icon !!');
       }
     } else {
       window.alert('Please enter your product set name !!');
     }
+  });
+  $('#btnSaveHWSetDetail').click(function () {
+    let data = getInputValues('#formHWSetDetail');
+    let table = document.getElementById("tblHWSetDetail");
+    let tr = document.createElement("tr");
+    let keys = ["actions", "item_no", "quantity", "unit_price", "total_price"];
+    for (let key of keys) {
+      let td = document.createElement("td");
+      if (key == "actions") {
+        let button = document.createElement("button");
+        button.textContent = "Remove";
+        button.onclick = function(e) {
+          table.removeChild(e.currentTarget.parentNode.parentNode);
+        }
+        td.appendChild(button);
+      } else if (key == "total_price")
+        td.textContent = data["quantity"] * data["unit_price"];
+      else
+        td.textContent = data[key];
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+    showTab('1');
   });
   await initPalette(instance);
   // instance.enableElements(['bookmarksPanel', 'bookmarksPanelButton']);
@@ -246,13 +389,13 @@ async function initPalette(instance) {
     instance.setToolMode('AnnotationEdit');
   };
   const palette = document.getElementById('palette');
-  // for (let pname in productSets) {
+  // for (let pname in HWSets) {
   //   document.getElementById(pname + 'copy').closest('div').remove();
   // }
-  const response = await fetch("/getProductSets");
-  productSets = await response.json();
+  const response = await fetch("/getHWSets");
+  HWSets = await response.json();
   palette.innerHTML = '';
-  for (let pname in productSets) {
+  for (let pname in HWSets) {
     const div = document.createElement('div');
     const span = document.createElement('span');
     const img = document.createElement('img');
@@ -260,21 +403,21 @@ async function initPalette(instance) {
     div.setAttribute('draggable', true);
     div.appendChild(img);
     div.appendChild(span);
-    div.className = "prod-item";
+    div.className = "hw-item";
     span.innerHTML = `&nbsp;&nbsp;&nbsp;${pname}`;
-    img.src = productSets[pname].src;
+    img.src = HWSets[pname].src;
     img.onload = function () {
 
       div.onclick = e => {
         let img = e.currentTarget.getElementsByTagName('img')[0];
         if (e.currentTarget.classList.contains('selected')) {
           e.currentTarget.classList.remove('selected');
-          removeCustomStampTool(productSets[pname]);
+          removeCustomStampTool(HWSets[pname]);
         } else {
           let els = document.querySelectorAll('div.selected');
           for (let el of els) el.click();
           e.currentTarget.classList.add('selected');
-          addCustomStampTool(productSets[pname], img);
+          addCustomStampTool(HWSets[pname], img);
         }
         // addStamp(img.src, {}, document.getElementById(pname + 'copy'));
       };
@@ -364,6 +507,7 @@ window.createStampTool = (instance, prodSet, img) => {
         // 'ImageData' can be a bas64 ImageString or an URL. If it's an URL, relative paths will cause issues when downloading
         // console.log('tiger load icon:' + prodSet.src.substr(1))
         // this.annotation.ImageData = 'http://localhost:9988' + prodSet.src.substr(1);
+        this.annotation.Subject = prodSet.pname;
         this.annotation.ImageData = dataURL;
         this.annotation.Width = width;
         this.annotation.Height = height;

@@ -10,7 +10,7 @@ div {
     height: 100vh;
 }
 
-#iconProdSet div {
+#iconHWSet div {
     margin: 3px;
     padding: 5px 8px;
     cursor: pointer;
@@ -18,11 +18,11 @@ div {
     display: inline-block;
 }
  
-#iconProdSet div:hover {
+#iconHWSet div:hover {
     background-color: #b6ded5;
 }
 
-.prod-item {
+.hw-item {
     font-size: 15px;
     background-color: #e9e9e9;
     width: 100%;
@@ -35,7 +35,7 @@ div {
     background-color: #b6ded5;
 }
 
-#btnShowProdSet {
+#btnShowHWSet {
     background-color: #81c6b7;
     opacity: .5;
     border: none;
@@ -54,6 +54,18 @@ div {
     border-radius: 50%;
 }
 
-#btnShowProdSet:hover {
+#btnShowHWSet:hover {
     opacity: 1;
+}
+
+table {
+    width: 100%;
+}
+
+table th {
+    background-color: lightgray;
+}
+
+.AnnotationContentOverlay {
+    max-width: none;
 }

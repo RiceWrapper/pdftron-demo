@@ -68,7 +68,7 @@ app.post("/savePDF", async (req, res) => {
     }
 })
 
-app.get("/getProductSets", async (req, res) => {
+app.get("/getHWSets", async (req, res) => {
     try {
         res.status(200);
         res.json(PRODUCT_SETS);
@@ -77,13 +77,24 @@ app.get("/getProductSets", async (req, res) => {
     }
 })
 
+app.get("/getHWSet", async (req, res) => {
+    let hw_set_name = req.query.hw_set_name;
+    try {
+        res.status(200);
+        res.json(PRODUCT_SETS[hw_set_name]);
+    } catch (err) {
+        res.sendStatus(404);
+    }
+})
+
 app.post("/saveProductSet", async (req, res) => {
     let prod_set_name = req.body.prod_set_name;
     let src = req.body.src;
+    let items = JSON.parse(req.body.items);
     try {
         PRODUCT_SETS[prod_set_name] = {
             "pname": prod_set_name,
-            "src": src, "items": []
+            "src": src, "items": items
         };
         await new Promise((resolve, reject) => {
             fs.writeFile(PRODUCT_SETS_PATH, JSON.stringify(PRODUCT_SETS), (err) => {
