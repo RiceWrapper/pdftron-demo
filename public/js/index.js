@@ -106,28 +106,12 @@ $(document).ready(function () {
         });
 
         instance.setAnnotationContentOverlayHandler(annotation => {
-          // let hw_set_name = annotation.Subject;
-          // let response = await fetch(`/getHWSet?hw_set_name=${hw_set_name}`, {
-          //   headers: { 'Content-Type': 'application/json' }
-          // });
-          // if (response.status == 200) {
-          let HWSet = {
-            "pname": "Deadbolt-01",
-            "src": "./images/deadbolt.png",
-            "items": [{
-              "prod_line": "Commercial Locks",
-              "item_no": "FD360D",
-              "unit_price": 360,
-              "quantity": 2,
-              "total_price": 720
-            }]
-          }
-          // let HWSet = await response.json();
+          const hw_set_name = annotation.Subject;
+          const keys = ["item_no", "quantity", "unit_price", "total_price"];
           const div = document.createElement('div');
           const h3 = document.createElement("h3");
-          h3.textContent = annotation.Subject;
+          h3.textContent = hw_set_name;
           const table = document.createElement("table");
-          const keys = ["item_no", "quantity", "unit_price", "total_price"];
           let _tr = document.createElement("tr");
           for (let key of keys) {
             let th = document.createElement("th");
@@ -135,20 +119,27 @@ $(document).ready(function () {
             _tr.appendChild(th);
           }
           table.appendChild(_tr);
-
-          for (let item of HWSet.items) {
-            let tr = document.createElement("tr");
-            for (let key of keys) {
-              let td = document.createElement("td");
-              td.textContent = item[key];
-              tr.appendChild(td);
-            }
-            table.appendChild(tr);
-          }
+          fetch(`/getHWSet?hw_set_name=${hw_set_name}`)
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function (HWSet) {
+              for (let item of HWSet.items) {
+                let tr = document.createElement("tr");
+                for (let key of keys) {
+                  let td = document.createElement("td");
+                  td.textContent = item[key];
+                  tr.appendChild(td);
+                }
+                table.appendChild(tr);
+              }
+            })
+            .catch(function (err) {
+              console.log('setAnnotationContentOverlayHandler:' + err);
+            });
           div.appendChild(h3);
           div.appendChild(table);
           return div;
-          // }
         });
 
         // instance.iframeWindow.document.body.ondragover = e => {
@@ -248,6 +239,10 @@ async function setupWebViewer(instance) {
   instance.disableElements(['ribbons', 'toolsHeader']);
   document.getElementById('mdlHWSet').addEventListener('shown.bs.modal', function () {
     clearForm("#formHWSet");
+    let table = document.getElementById("tblHWSetDetail");
+    let trs = table.querySelectorAll("tr");
+    for (let i = 1; i < trs.length; i++) table.removeChild(trs[i]);
+    document.getElementById("total_price").textContent = 0;
     getInput("#formHWSet", "prod_set_name").focus();
   });
   $('#btnSaveHWSet').click(async function () {
@@ -260,7 +255,7 @@ async function setupWebViewer(instance) {
         let trs = tblHWSetDetail.querySelectorAll("tr");
         if (trs.length > 1) {
           let items = [];
-          for (let i = 1; i < trs; i++) {
+          for (let i = 1; i < trs.length; i++) {
             let tds = trs[i].querySelectorAll("td");
             let item = {};
             item.item_no = tds[1].textContent;
@@ -300,18 +295,20 @@ async function setupWebViewer(instance) {
     let table = document.getElementById("tblHWSetDetail");
     let tr = document.createElement("tr");
     let keys = ["actions", "item_no", "quantity", "unit_price", "total_price"];
+    let total_price = document.getElementById("total_price");
     for (let key of keys) {
       let td = document.createElement("td");
       if (key == "actions") {
         let button = document.createElement("button");
         button.textContent = "Remove";
-        button.onclick = function(e) {
+        button.onclick = function (e) {
           table.removeChild(e.currentTarget.parentNode.parentNode);
         }
         td.appendChild(button);
-      } else if (key == "total_price")
+      } else if (key == "total_price") {
+        total_price.textContent = parseInt(total_price.textContent) + data["quantity"] * data["unit_price"];
         td.textContent = data["quantity"] * data["unit_price"];
-      else
+      } else
         td.textContent = data[key];
       tr.appendChild(td);
     }

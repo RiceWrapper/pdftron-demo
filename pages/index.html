@@ -24,7 +24,7 @@
       </div>
     </div>
   </div>
-  <button id="btnShowHWSet" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mdlHWSet">
+  <button id="btnShowHWSet" type="button" data-bs-toggle="modal" data-bs-target="#mdlHWSet">
     +
   </button>
 
@@ -75,6 +75,7 @@
           </form>
         </div>
         <div class="modal-footer">
+          Total Price: <div id="total_price" style="display: inline; margin-right: 10px;">0</div>
           <button id="btnSaveHWSet" type="button" class="btn btn-primary">Create</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
@@ -88,12 +89,14 @@
           <form id="formHWSetDetail">
             <div class="col-md-6 mb-2">
               <label class="form-label">Product Line:</label>
-              <select id="prod_line" name="prod_line" onchange="onProdLineChanged(this)" class="form-select" aria-label="Default select example">
+              <select id="prod_line" name="prod_line" onchange="onProdLineChanged(this)" class="form-select"
+                aria-label="Default select example">
               </select>
             </div>
             <div class="col-md-6 mb-2">
               <label class="form-label">Item No.:</label>
-              <select id="item_no" name="item_no" class="form-select" onchange="onItemNoChanged(this)" aria-label="Default select example">
+              <select id="item_no" name="item_no" class="form-select" onchange="onItemNoChanged(this)"
+                aria-label="Default select example">
               </select>
             </div>
             <div class="col-md-6 mb-2">

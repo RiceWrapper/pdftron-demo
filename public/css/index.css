@@ -17,7 +17,7 @@ div {
     border: 1px #b6ded5 solid;
     display: inline-block;
 }
- 
+
 #iconHWSet div:hover {
     background-color: #b6ded5;
 }
@@ -36,22 +36,22 @@ div {
 }
 
 #btnShowHWSet {
-    background-color: #81c6b7;
-    opacity: .5;
     border: none;
     color: white;
     padding: 0px 0px 12px 0px !important;
     line-height: 0px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    display: block;
     font-size: 70px;
     height: 80px;
     width: 80px;
     position: fixed;
+    border-radius: 50%;
+    opacity: .5;
     left: 20px;
     bottom: 20px;
-    border-radius: 50%;
+    background-color: #81c6b7;
 }
 
 #btnShowHWSet:hover {
