@@ -103,6 +103,52 @@ $(document).ready(function () {
                 window.alert('Save failed= =');
             }
           });
+          header.push({
+            type: 'actionButton',
+            title: 'Summary',
+            dataElement: 'summaryButton',
+            img: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+          </svg>`,
+            onClick: async () => {
+              var summary = "{0}\r\n{1}\r\n+Total Price:${2}";
+              var annotSum = {};
+              var HWSum = {};
+              var priceSum = 0;
+              const annotList = await annotManager.getAnnotationsList();
+              const annotTypeList = annotList.filter((v, i) => i == annotList.findIndex(v2 => v2.Subject == v.Subject));
+              for (let annotType of annotTypeList) {
+                let matches = annotList.filter(v => v.Subject == annotType.Subject);
+                annotSum[annotType.Subject] = matches.length;
+
+                let HWSet = HWSets[annotType.Subject];
+                if (HWSet) {
+                  for (let HW of HWSet.items) {
+                    if (HWSum[HW.item_no]) { 
+                      HWSum[HW.item_no]['quantity'] += (HW.quantity * matches.length); 
+                      HWSum[HW.item_no]['total_price'] += (HW.total_price * matches.length);
+                    } else {
+                      HWSum[HW.item_no] = {
+                        "quantity": (HW.quantity * matches.length),
+                        "total_price": (HW.total_price * matches.length)
+                      };
+                    }
+                    priceSum += (HW.total_price * matches.length);
+                  }
+                }
+              }
+              let txtAnnotSum = "+ Annotation Summary:\r\n";
+              for (let aname in annotSum) {
+                txtAnnotSum += `${aname} X${annotSum[aname]}\r\n`
+              }
+              let txtHWSum = "+ Hardware Summary:\r\n";
+              for (let aname in HWSum) {
+                txtHWSum += `${aname} X${HWSum[aname]["quantity"]}, price: ${HWSum[aname]["total_price"]}\r\n`
+              }
+              window.alert(String.format(summary, txtAnnotSum, txtHWSum, priceSum));
+            }
+          });
         });
 
         instance.setAnnotationContentOverlayHandler(annotation => {
@@ -511,6 +557,7 @@ window.createStampTool = (instance, prodSet, img) => {
         this.annotation.X -= width / 2;
         this.annotation.Y -= height / 2;
         this.annotation.MaintainAspectRatio = true;
+        this.annotation.Author = "ALZK";
         annotation = this.annotation;
       }
 
