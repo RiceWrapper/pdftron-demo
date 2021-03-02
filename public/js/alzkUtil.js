@@ -7,7 +7,12 @@ function bindDataToForm(formId, data, optMapping = {}) {
             if (inputs[i].tagName === "INPUT") {
                 switch (inputs[i].type) {
                     case "checkbox":
-                        $(inputs[i]).prop("checked", (inputs[i].value == value));
+                        if (Array.isArray(value)) {
+                            if (value.indexOf(inputs[i].value) > -1)
+                                $(inputs[i]).prop("checked", true);
+                        } else {
+                            $(inputs[i]).prop("checked", (inputs[i].value == value));
+                        }
                         break;
                     default:
                         $(inputs[i]).val(value);
@@ -147,7 +152,7 @@ function getInput(id, name) {
     return $(id).find(`input[name="${name}"], select[name="${name}"], textarea[name="${name}"], a[name="${name}"]`);
 }
 
-function htmlencode(str){
+function htmlencode(str) {
     // return str.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
     var div = document.createElement('div');
     div.appendChild(document.createTextNode(str));

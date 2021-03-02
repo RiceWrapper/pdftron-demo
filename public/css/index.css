@@ -6,8 +6,33 @@ div {
     box-sizing: border-box;
 }
 
-#palette, #viewer {
+#viewer {
+    z-index: 10;
+}
+
+#bookmarker {
+    padding: 5px;
+    color:#e9e9e9;
+    font-size: 12px;
+    background-color: black;
+    opacity: .5;
+    width: 150px;
+    position: fixed;
+    left: 18%;
+    bottom: 20px;
+    z-index: 11;
+}
+
+#viewer {
     height: 100vh;
+}
+
+#palette, #bookmarks {
+    height: 85vh;
+}
+
+#palette, #bookmarks {
+    height: 15vh;
 }
 
 #iconHWSet div {

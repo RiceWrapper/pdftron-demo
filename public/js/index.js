@@ -11,6 +11,9 @@
 let dropPoint = {};
 let HWSets = {};
 var instance;
+var docViewer2;
+var pageNoNow = 1;
+var bookmarksList = {};
 var hardwareList = [
   { prod_line: "Commercial Locks", item_no: "FD360D", unit_price: 360, keyway: [] },
   { prod_line: "Commercial Locks", item_no: "FD701", unit_price: 320, keyway: [] },
@@ -67,6 +70,7 @@ $(document).ready(function () {
         instance = _instance;
         setupWebViewer(instance);
         const { docViewer, annotManager } = instance;
+        docViewer2 = docViewer;
         const response = await fetch("/loadPDF");
         const myBlob = await response.blob();
         docViewer.loadDocument(myBlob, { filename: "mydoc.pdf" });
@@ -125,8 +129,8 @@ $(document).ready(function () {
                 let HWSet = HWSets[annotType.Subject];
                 if (HWSet) {
                   for (let HW of HWSet.items) {
-                    if (HWSum[HW.item_no]) { 
-                      HWSum[HW.item_no]['quantity'] += (HW.quantity * matches.length); 
+                    if (HWSum[HW.item_no]) {
+                      HWSum[HW.item_no]['quantity'] += (HW.quantity * matches.length);
                       HWSum[HW.item_no]['total_price'] += (HW.total_price * matches.length);
                     } else {
                       HWSum[HW.item_no] = {
@@ -186,6 +190,14 @@ $(document).ready(function () {
           div.appendChild(h3);
           div.appendChild(table);
           return div;
+        });
+
+        docViewer.on("pageNumberUpdated", function (pageNo) {
+          pageNoNow = pageNo;
+          clearForm("#bookmarker");
+          if (bookmarksList[pageNoNow.toString()]) {
+            bindDataToForm("#bookmarker", { "bookmark": bookmarksList[pageNoNow.toString()]});
+          }
         });
 
         // instance.iframeWindow.document.body.ondragover = e => {
@@ -259,6 +271,21 @@ function onProdLineChanged(el) {
       selector.appendChild(option);
     }
     onItemNoChanged(selector);
+  }
+}
+
+function gotoBookmark(value) {
+  Object.keys(bookmarksList).forEach(x => {
+    if (bookmarksList[x].indexOf(value) > -1) {
+      docViewer2.setCurrentPage(parseInt(x));
+    }
+  });
+}
+
+function onBookmarkChanged(value) {
+  if (pageNoNow > 0) {
+    let data = getInputValues("#bookmarker");
+    bookmarksList[pageNoNow.toString()] = data.bookmark;
   }
 }
 

@@ -15,12 +15,28 @@
 <body>
   <div class="container-fluid">
     <div class="row">
-      <div id="palette" class="col-md-2 g-0">
-        <!-- <div id="sample-image" draggable="true">
+      <div class="col-md-2 g-0">
+        Bookmarks<br>
+        <div id="bookmarks" class="col-md-12 g-0">
+          <a href="#" onclick="gotoBookmark('A')">Common Area Plan</a><br>
+          <a href="#" onclick="gotoBookmark('B')">Door Schedule</a><br>
+          <a href="#" onclick="gotoBookmark('C')">Unit Plan</a><br>
+        </div>
+        Hardware Sets<br>
+        <div id="palette" class="col-md-12 g-0">
+          <!-- <div id="sample-image" draggable="true">
           <img src="/images/pin.png"> <span>Deadbolt</span>
         </div> -->
+        </div>
       </div>
       <div id="viewer" class="col-md-10 g-0">
+      </div>
+      <div id="bookmarker">
+        <label><input type="checkbox" name="bookmark" value="A" onchange="onBookmarkChanged()">&nbsp;Common Area
+          Plan</label><br>
+        <label><input type="checkbox" name="bookmark" value="B" onchange="onBookmarkChanged()">&nbsp;Door
+          Schedule</label><br>
+        <label><input type="checkbox" name="bookmark" value="C" onchange="onBookmarkChanged()">&nbsp;Unit Plan</label>
       </div>
     </div>
   </div>
